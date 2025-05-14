@@ -22,7 +22,6 @@ command-line flags.
 
 from collections.abc import Sequence
 import os
-import pdb
 from transformers import set_seed
 
 from absl import app
@@ -37,7 +36,6 @@ from android_world.agents import vdroid
 from android_world.env import env_launcher
 from android_world.env import interface
 import subprocess
-import time
 
 logging.set_verbosity(logging.WARNING)
 
@@ -105,6 +103,8 @@ _SUITE_FAMILY = flags.DEFINE_enum(
         registry.TaskRegistry.MINIWOB_FAMILY,
         registry.TaskRegistry.ANDROID_FAMILY,
         registry.TaskRegistry.INFORMATION_RETRIEVAL_FAMILY,
+        # The other two benchmarks used in our paper, AndroidLab and MobileAgentBench
+        # We would release them in the future.
         # registry.TaskRegistry.ANDROID_LAB_FAMILY,
         # registry.TaskRegistry.mobile_agent_bench_family,
     ],
@@ -169,6 +169,7 @@ def _get_agent(
     print('Initializing agent...')
     agent = None
 
+    # We use llama-3.1-8B-Instruct as the base model for V-Droid.
     base_model_name = "unsloth/Meta-Llama-3.1-8B-Instruct-bnb-4bit"
     if _AGENT_NAME.value == "VDroid":
         agent = vdroid.VDroidAgent(env, base_model_name, adapter_dir=_LORA_DIR.value, llm_name=_LLM_NAME.value, n_iters=int(

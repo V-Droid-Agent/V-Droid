@@ -1,7 +1,4 @@
-import queue
 from absl import logging
-import pdb
-import time
 from MCTS.mcts_node import MCTSNode
 from android_world.agents import agent_utils
 from android_world.agents import base_agent
@@ -12,7 +9,6 @@ from android_world.env import interface
 from android_world.env import json_action
 from android_world.env import representation_utils
 from typing import Generic, TypeVar, Optional, NamedTuple, Callable, Hashable
-import itertools
 import numpy as np
 from abc import ABC, abstractmethod
 import math
@@ -23,7 +19,6 @@ from tqdm import trange
 from copy import deepcopy
 from math import ceil
 from typing import Type
-import pickle
 import torch
 
 from android_world.task_evals import task_eval
@@ -165,6 +160,7 @@ class VDroidAgent(base_agent.EnvironmentInteractingAgent):
 
         ray.get([act.ping.remote() for act in actors])
 
+        # llm used for action completion and working memory construction
         self.llm = infer.Gpt4Wrapper(llm_name, temperature=0.2)
 
         self.iter_idx = 0
@@ -239,7 +235,6 @@ class VDroidAgent(base_agent.EnvironmentInteractingAgent):
         if converted_action.action_type == 'answer':
             print('Agent answered with: ' + converted_action.text)
 
-        # pdb.set_trace()
         try:
             self.env.execute_action(converted_action)
         except Exception as e:  # pylint: disable=broad-exception-caught
