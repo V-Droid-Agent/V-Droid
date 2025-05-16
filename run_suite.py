@@ -132,6 +132,11 @@ _AGENT_NAME = flags.DEFINE_string(
     'agent_name', 't3a_llama', help='Agent name.')
 _LLM_NAME = flags.DEFINE_string(
     'llm_name', 'gpt-4o', help='LLM name for action completion and working memory construction, [gpt-4o, gpt-4].')
+_SERVICE_NAME = flags.DEFINE_string(
+    'service_name',
+    'trapi',
+    help='The name of the service to call the llm above. [trapi, openai, azure_openai].',
+)
 _SAVE_NAME = flags.DEFINE_string(
     'save_name', 'test', help='Path to store the results.')
 _LORA_DIR = flags.DEFINE_string(
@@ -171,8 +176,9 @@ def _get_agent(
 
     # We use llama-3.1-8B-Instruct as the base model for V-Droid.
     base_model_name = "unsloth/Meta-Llama-3.1-8B-Instruct-bnb-4bit"
+
     if _AGENT_NAME.value == "VDroid":
-        agent = vdroid.VDroidAgent(env, base_model_name, adapter_dir=_LORA_DIR.value, llm_name=_LLM_NAME.value, n_iters=int(
+        agent = vdroid.VDroidAgent(env, base_model_name, adapter_dir=_LORA_DIR.value, llm_name=_LLM_NAME.value, service_name=_SERVICE_NAME.value, n_iters=int(
             _ITERATION.value), family=family, summary_mode=_SUMMARY.value, num_actors=_NUM_GPUS.value)
 
     if not agent:

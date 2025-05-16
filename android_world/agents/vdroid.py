@@ -40,13 +40,14 @@ SOFT_SCORE_SHIFT = 1e2
 
 @ray.remote(num_gpus=1)
 class ModelActor:
-    def __init__(self, model_name, lora_dir, acc_design, temperature=0.2):
+    def __init__(self, service_name, model_name, lora_dir, acc_design, temperature=0.2):
         from android_world.agents.infer import Gpt4_Llama_Mix_Wrapper
         reward_type = "probs" if acc_design == "policy" else "score"
         prefix_share = False if acc_design in ["no_prefix", "policy"] else True
 
         self.llm = Gpt4_Llama_Mix_Wrapper(
             'gpt-4',
+            service_name,
             model_name,
             temperature=temperature,
             adapter_dir=lora_dir,
@@ -63,7 +64,7 @@ class ModelActor:
         with torch.no_grad():
             return self.llm.predict_scores_batch(prompts)
 
-    def reinit_llm(self, model_name, lora_dir, acc_design, temperature=0.2):
+    def reinit_llm(self, model_name, service_name, lora_dir, acc_design, temperature=0.2):
         """
         Clear old model, re-init a new one. 
         Equivalent to your 'if count == 10' logic for clearing cache.
@@ -77,6 +78,7 @@ class ModelActor:
 
         self.llm = Gpt4_Llama_Mix_Wrapper(
             'gpt-4',
+            service_name,
             model_name,
             temperature=temperature,
             adapter_dir=lora_dir,
@@ -106,6 +108,7 @@ class VDroidAgent(base_agent.EnvironmentInteractingAgent):
         local_model_name,
         adapter_dir,
         llm_name,
+        service_name,
         save_dir: str = None,
         goal: str = None,
         task: Type[task_eval.TaskEval] = None,
@@ -155,13 +158,13 @@ class VDroidAgent(base_agent.EnvironmentInteractingAgent):
         ModelClass = ModelActor.options(num_gpus=1)
         for _ in range(num_actors):
             actor = ModelClass.remote(
-                local_model_name, adapter_dir, "dynamic_batch")
+                service_name, local_model_name, adapter_dir, "dynamic_batch")
             actors.append(actor)
 
         ray.get([act.ping.remote() for act in actors])
 
         # llm used for action completion and working memory construction
-        self.llm = infer.Gpt4Wrapper(llm_name, temperature=0.2)
+        self.llm = infer.Gpt4Wrapper(llm_name, service_name, temperature=0.2)
 
         self.iter_idx = 0
         self.additional_guidelines = None
