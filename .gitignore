@@ -107,7 +107,7 @@ celerybeat.pid
 # Environments
 .env
 .venv
-env/
+# env/
 venv/
 ENV/
 env.bak/
@@ -139,3 +139,4 @@ cython_debug/
 
 # MAC files
 .DS_Store
+/saved

@@ -31,7 +31,6 @@ import numpy as np
 from PIL import Image
 import requests
 from openai import AzureOpenAI, OpenAI
-from ollama import Client
 import torch
 from transformers import MllamaForConditionalGeneration, AutoProcessor
 from typing import Optional, Union, List
@@ -357,93 +356,20 @@ class GeminiGcpWrapper(LlmWrapper, MultimodalLlmWrapper):
         return
 
 
-class OllamaWrapper(LlmWrapper, MultimodalLlmWrapper):
-    """Ollama wrapper.
+# def store_screen(state, step_idx, save_dir):
+#     # pdb.set_trace()
+#     save_path = os.path.join(save_dir, f"screen_shot/")
+#     if not os.path.exists(save_path):
+#         os.makedirs(save_path)
 
-    Attributes:
-      max_retry: Max number of retries when some error happens.
-      temperature: The temperature parameter in LLM to control result stability.
-      model: GPT model to use based on if it is multimodal.
-    """
-    RETRY_WAITING_SECONDS = 20
+#     pixels = state['raw_screenshot']
+#     img = Image.fromarray(np.uint8(pixels))
+#     img.save(save_path + f"step{step_idx}.jpg", 'JPEG')
 
-    def __init__(
-        self,
-        model_name: str,
-        max_retry: int = 3,
-        temperature: float = 0.0,
-    ):
-        if max_retry <= 0:
-            max_retry = 3
-            print('Max_retry must be positive. Reset it to 3')
-        self.max_retry = min(max_retry, 5)
-        self.temperature = temperature
-        self.model = model_name
-        self.client = Client(host='http://localhost:11434')
-
-    @classmethod
-    def encode_image(cls, image: np.ndarray) -> str:
-        return base64.b64encode(array_to_jpeg_bytes(image)).decode('utf-8')
-
-    def predict(
-        self,
-        text_prompt: str,
-    ) -> tuple[str, Optional[bool], Any]:
-        return self.predict_mm(text_prompt, [])
-
-    def predict_mm(
-        self, text_prompt: str, images: list[np.ndarray]
-    ) -> tuple[str, Optional[bool], Any]:
-
-        counter = self.max_retry
-        wait_seconds = self.RETRY_WAITING_SECONDS
-
-        while counter > 0:
-            try:
-                response = self.client.chat(model=self.model, messages=[
-                    {
-                        'role': 'user',
-                        'content': text_prompt,
-                        'temperature': self.temperature,
-                    },
-                ])
-                if response and hasattr(response, 'choices'):
-                    # print(response.choices[0].message.content)
-                    return (
-                        response['message']['content'],
-                        None,
-                        response,
-                    )
-                print(
-                    'Error calling OpenAI API with error message: '
-                    + response["error"]["message"]
-                )
-                time.sleep(wait_seconds)
-                wait_seconds *= 2
-            except Exception as e:  # pylint: disable=broad-exception-caught
-                # Want to catch all exceptions happened during LLM calls.
-                time.sleep(wait_seconds)
-                wait_seconds *= 2
-                counter -= 1
-                print('Error calling LLM, will retry soon...')
-                print(e)
-        return ERROR_CALLING_LLM, None, None
-
-
-def store_screen(state, step_idx, save_dir):
-    # pdb.set_trace()
-    save_path = os.path.join(save_dir, f"screen_shot/")
-    if not os.path.exists(save_path):
-        os.makedirs(save_path)
-
-    pixels = state['raw_screenshot']
-    img = Image.fromarray(np.uint8(pixels))
-    img.save(save_path + f"step{step_idx}.jpg", 'JPEG')
-
-    pixels_ann = state['before_screenshot_with_som']
-    img_ann = Image.fromarray(np.uint8(pixels_ann))
-    img_ann.save(save_path + f"step{step_idx}_ann.jpg", 'JPEG')
-    return
+#     pixels_ann = state['before_screenshot_with_som']
+#     img_ann = Image.fromarray(np.uint8(pixels_ann))
+#     img_ann.save(save_path + f"step{step_idx}_ann.jpg", 'JPEG')
+#     return
 
 
 class Gpt4Wrapper(LlmWrapper, MultimodalLlmWrapper):

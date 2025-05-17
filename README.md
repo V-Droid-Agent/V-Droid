@@ -26,18 +26,29 @@ Paper link: https://arxiv.org/abs/2503.15937
     ```
     conda create -n android_world python=3.11.8
     conda activate android_world
+    conda install pytorch torchvision torchaudio pytorch-cuda=11.8 -c pytorch -c nvidia
+    conda install -y numpy pandas
     ```
 
-4. Install AndroidWorld. *Note: Python 3.11 or above is required.*
+4. Install Dependency. *Note: Python 3.11 or above is required.*
 
     ```python
-    git clone https://github.com/google-research/android_world.git
-    cd ./android_world
     pip install -r requirements.txt
-    python setup.py install
     ```
 
-5. Add model provider APIs as environment variables.
+5. Modify vLLM.
+     
+    Please navigate to vllm/model_executor/layers/sampler.py, add the following to line 317.
+
+    ```python
+    for val, lst in zip(logits, sample_logprobs):
+            for d in lst:
+                for k in d.keys():
+                    d[k].logprob = val
+    ```
+    (See https://github.com/vllm-project/vllm/issues/11397 for more explanations)
+
+6. Add model provider APIs as environment variables.
 
     Three API providers are supported: TRAPI (https://trapi-portal.research.microsoft.com/signin?returnUrl=%2F), OpenAI and its compatible APIs, and Azure OpenAI services. You may configure any of these based on your preferences.
     ```bash
@@ -65,12 +76,12 @@ Paper link: https://arxiv.org/abs/2503.15937
     export AZURE_OPENAI_ENDPOINT=
     ```
 
-6. Download Lora weights for V-Droid model
+7. Download Lora weights for V-Droid model
    
     Please contact shijiang@microsoft.com for the lora weights download
 
-7. Lauanch the emulator and run the eveluation tasks
+8. Lauanch the emulator and run the eveluation tasks
    ```bash
    emulator -avd AndroidWorldAvd -no-window -no-snapshot -grpc 8554
-   bash main_standanlone.sh
+   bash main_standalone.sh
    ```
