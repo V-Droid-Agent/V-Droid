@@ -21,4 +21,16 @@ peft
 azure-identity
 vllm==0.7.3
 bs4
-bitsandbytes==0.45.5
+bitsandbytes==0.45.5=
+datasets==3.1.0
+decord==0.6.0
+deepspeed==0.16.1
+liger_kernel==0.5.1
+safetensors==0.4.5
+ujson==5.10.0
+wandb==0.19.0
+scipy==1.14.1
+openai==1.58.1
+trl
+numpy
+Pillow

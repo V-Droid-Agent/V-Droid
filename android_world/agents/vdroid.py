@@ -253,7 +253,7 @@ class VDroidAgent(base_agent.EnvironmentInteractingAgent):
                 node.node_info['html_desc'] = node.parent.node_info['html_desc']
             state = node.parent.state.copy()
             return state
-
+        
         ui_state = self.get_post_transition_state()
         try:
             html_desc = turn_tree_to_html_input(ui_state.forest)

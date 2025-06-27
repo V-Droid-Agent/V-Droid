@@ -108,7 +108,7 @@ def load_dpo_model_v2(model_name, save_path, lora_alpha=32):
     return model, lora_config
 
 
-def load_lora_model(model_name, lora_alpha=32):
+def load_lora_model(model_name, lora_rank=16, lora_alpha=32):
     if "Llama-3.2" in model_name:
         model = MllamaForConditionalGeneration.from_pretrained(
             model_name,
@@ -134,12 +134,11 @@ def load_lora_model(model_name, lora_alpha=32):
             low_cpu_mem_usage=True,
         )
     model = prepare_model_for_kbit_training(model,
-                                            # walk around a bug
                                             gradient_checkpointing_kwargs={"use_reentrant": True})
 
     # add LoRA to model
     lora_config = LoraConfig(
-        r=16,
+        r=lora_rank,
         lora_alpha=lora_alpha,
         lora_dropout=0.05,
         bias="none",
@@ -221,7 +220,7 @@ def load_v_head_from_dir(v_head, lora_path, cluster, device, train_from_scratch=
 
 
 class LlamaRewardModel(nn.Module):
-    def __init__(self, model_name, lora_path=None, reward_type="probs", lora_alpha=32, cluster=1, margin=None,
+    def __init__(self, model_name, lora_path=None, reward_type="probs", lora_rank=16, lora_alpha=32, cluster=1, margin=None,
                  kv_cache=True, train_from_scratch=1, if_train=False, prefix_sharing=True):
         super().__init__()
 
@@ -229,15 +228,12 @@ class LlamaRewardModel(nn.Module):
         self.model_name = model_name
         self.train_from_scratch = train_from_scratch
         self.prefix_sharing = prefix_sharing
-        # if lora_path and ("llama" in model_name.lower() or "deepseek-ai" in model_name.lower()):
-        #     self.kv_cache = kv_cache = True
-        # else:
+
         if if_train:
             self.kv_cache = kv_cache = False
         else:
             self.kv_cache = kv_cache
 
-        # self.kv_cache = kv_cache
         self.lora_path = lora_path
         self.margin = margin
 
@@ -245,7 +241,7 @@ class LlamaRewardModel(nn.Module):
             self.model = load_lora_model_from_dir(self.model_name, self.lora_path, kv_cache=self.kv_cache,
                                                   train_from_scratch=self.train_from_scratch, enable_prefix_caching=self.prefix_sharing)
         else:
-            self.model = load_lora_model(model_name, lora_alpha=lora_alpha)
+            self.model = load_lora_model(model_name, lora_rank=lora_rank, lora_alpha=lora_alpha)
 
         if self.kv_cache:
             self.tokenizer = self.model.get_tokenizer()
