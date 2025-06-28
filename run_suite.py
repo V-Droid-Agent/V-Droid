@@ -137,15 +137,11 @@ _SERVICE_NAME = flags.DEFINE_string(
     'trapi',
     help='The name of the service to call the llm above. [trapi, openai, azure_openai].',
 )
-_SAVE_NAME = flags.DEFINE_string(
-    'save_name', 'test', help='Path to store the results.')
-_LORA_DIR = flags.DEFINE_string(
-    'lora_dir', 'RewardModel_Ori', help='The path to the lora module.')
-_ITERATION = flags.DEFINE_string(
-    'iteration', '1', help='The search iteration.')
+_SAVE_NAME = flags.DEFINE_string('save_name', 'test', help='Path to store the results.')
+_LORA_DIR = flags.DEFINE_string('lora_dir', 'V-Droid-110K', help='The path to the lora module.')
+_ITERATION = flags.DEFINE_string('iteration', '1', help='The search iteration.')
 _SUMMARY = flags.DEFINE_string('summary', 'llm', help='The summary mode.')
-_NUM_GPUS = flags.DEFINE_integer(
-    'num_gpus', 2, help='The num of gpu for parallel execution of verifier.')
+_NUM_GPUS = flags.DEFINE_integer('num_gpus', 2, help='The num of gpu for parallel execution of verifier.')
 
 
 _FIXED_TASK_SEED = flags.DEFINE_boolean(

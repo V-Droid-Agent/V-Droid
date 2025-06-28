@@ -78,10 +78,17 @@ Paper link: https://arxiv.org/abs/2503.15937
 
 7. Download Lora weights for V-Droid model
    
-    Please contact shijiang@microsoft.com for the lora weights download
+   The V-Droid model weight is available at [MaginaDai/V-Droid-110K](https://huggingface.co/MaginaDai/V-Droid-110K)
 
 8. Lauanch the emulator and run the eveluation tasks
    ```bash
    emulator -avd AndroidWorldAvd -no-window -no-snapshot -grpc 8554
    bash main_standalone.sh
+   ```
+
+
+9. Training 
+   You may use the following code to train the lora module in V-Droid. We provide several training pairs to use.
+   ```bash
+   train.sh 
    ```
