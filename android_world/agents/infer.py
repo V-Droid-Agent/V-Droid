@@ -619,7 +619,7 @@ class Gpt4_Llama_Mix_Wrapper(LlmWrapper, MultimodalLlmWrapper):
         max_retry: int = 100,
         temperature: float = 0.0,
         reward_type: str = "score",
-        adapter_dir: str = "RewardModel_Ori",  # "LlamaReward", "RewardModel_Ori"
+        adapter_dir: str = "V-Droid-110K",
         prefix_sharing: bool = True,
     ):
         if max_retry <= 0:
