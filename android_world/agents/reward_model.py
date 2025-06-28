@@ -12,8 +12,7 @@ import os
 from vllm import LLM, SamplingParams
 from vllm.lora.request import LoRARequest
 
-target_modules = ['k_proj', 'q_proj', 'v_proj',
-                  'o_proj', "gate_proj", "down_proj", "up_proj"]
+target_modules= ['k_proj', 'q_proj', 'v_proj', 'o_proj', "gate_proj", "down_proj", "up_proj"]
 MAX_LENGTH = 2800
 
 
@@ -32,7 +31,7 @@ def load_dpo_model(model_name, save_path, lora_alpha=32):
         )
     base_model = prepare_model_for_kbit_training(base_model,
                                                  # walk around a bug
-                                                 gradient_checkpointing_kwargs={"use_reentrant": True})
+                                                 gradient_checkpointing_kwargs={"use_reentrant": False}) ## if report bug, try to turn it to True
 
     if "Llama-3.2" in model_name:
         base_model.config.text_config.use_cache = False
@@ -48,7 +47,6 @@ def load_dpo_model(model_name, save_path, lora_alpha=32):
         task_type="CAUSAL_LM",
     )
 
-    # model = get_peft_model(base_model, lora_config,)
     model = get_peft_model(base_model, lora_config, adapter_name="dpo_train")
     model.add_adapter("reference", peft_config=lora_config)
     for name, param in model.named_parameters():
@@ -61,7 +59,6 @@ def load_dpo_model(model_name, save_path, lora_alpha=32):
     if not os.path.exists(origin_dir):
         os.makedirs(origin_dir, exist_ok=True)
     model.save_pretrained(origin_dir)
-    # ref_model = get_peft_model(base_model, lora_config, adapter_name="reference",)
     return model
 
 
@@ -80,7 +77,7 @@ def load_dpo_model_v2(model_name, save_path, lora_alpha=32):
         )
     base_model = prepare_model_for_kbit_training(base_model,
                                                  # walk around a bug
-                                                 gradient_checkpointing_kwargs={"use_reentrant": True})
+                                                 gradient_checkpointing_kwargs={"use_reentrant": False}) ## if report bug, try to turn it to True
 
     if "Llama-3.2" in model_name:
         base_model.config.text_config.use_cache = False
@@ -108,7 +105,7 @@ def load_dpo_model_v2(model_name, save_path, lora_alpha=32):
     return model, lora_config
 
 
-def load_lora_model(model_name, lora_rank=16, lora_alpha=32):
+def load_lora_model(model_name, lora_rank=16, lora_alpha=32, if_train=False):
     if "Llama-3.2" in model_name:
         model = MllamaForConditionalGeneration.from_pretrained(
             model_name,
@@ -134,7 +131,7 @@ def load_lora_model(model_name, lora_rank=16, lora_alpha=32):
             low_cpu_mem_usage=True,
         )
     model = prepare_model_for_kbit_training(model,
-                                            gradient_checkpointing_kwargs={"use_reentrant": True})
+                                            gradient_checkpointing_kwargs={"use_reentrant": not if_train}) 
 
     # add LoRA to model
     lora_config = LoraConfig(
@@ -154,14 +151,12 @@ def load_lora_model(model_name, lora_rank=16, lora_alpha=32):
     return model
 
 
-def load_lora_model_from_dir(model_name, lora_path, lora_name='default', kv_cache=False, tokenizer=None, train_from_scratch=1, enable_prefix_caching=True):
+def load_lora_model_from_dir(model_name, lora_path, lora_name='default', kv_cache=False, tokenizer=None, train_from_scratch=1, enable_prefix_caching=True, if_train=False):
     if kv_cache:
-        snapshot_download(repo_id=lora_path,
-                          token="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")
+        snapshot_download(repo_id=lora_path)
         model = LLM(
             model=model_name,
             tokenizer=lora_path if "llama" in model_name.lower() else model_name,
-            # dtype=torch.bfloat16,
             trust_remote_code=True,
             quantization="bitsandbytes",
             load_format="bitsandbytes",
@@ -187,8 +182,7 @@ def load_lora_model_from_dir(model_name, lora_path, lora_name='default', kv_cach
 
         if not train_from_scratch:
             base_model = prepare_model_for_kbit_training(base_model,
-                                                         # walk around a bug
-                                                         gradient_checkpointing_kwargs={"use_reentrant": True})
+                                                         gradient_checkpointing_kwargs={"use_reentrant": not if_train})  ## if report bug, try to turn it to True
 
         model = PeftModel.from_pretrained(base_model, lora_path, lora_name)
 
@@ -211,11 +205,14 @@ def load_v_head_from_dir(v_head, lora_path, cluster, device, train_from_scratch=
     if cluster and train_from_scratch:
         v_head_weights_path = os.path.join(lora_path, "v_head.pth")
     else:
-        v_head_weights_path = hf_hub_download(
-            repo_id=lora_path, filename="v_head.pth", token="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")
+        v_head_weights_path = hf_hub_download(repo_id=lora_path, filename="v_head.pth")
 
-    v_head.load_state_dict(torch.load(
-        v_head_weights_path, map_location=device, weights_only=True))
+    v_head.load_state_dict(torch.load(v_head_weights_path, map_location=device, weights_only=True))
+    if not train_from_scratch:
+        # v_head = v_head.to(torch.float32)
+        pass
+    else:
+        v_head = v_head.to(torch.bfloat16)
     return v_head
 
 
@@ -239,9 +236,9 @@ class LlamaRewardModel(nn.Module):
 
         if lora_path:
             self.model = load_lora_model_from_dir(self.model_name, self.lora_path, kv_cache=self.kv_cache,
-                                                  train_from_scratch=self.train_from_scratch, enable_prefix_caching=self.prefix_sharing)
+                                                  train_from_scratch=self.train_from_scratch, enable_prefix_caching=self.prefix_sharing, if_train=if_train)
         else:
-            self.model = load_lora_model(model_name, lora_rank=lora_rank, lora_alpha=lora_alpha)
+            self.model = load_lora_model(model_name, lora_rank=lora_rank, lora_alpha=lora_alpha, if_train=if_train)
 
         if self.kv_cache:
             self.tokenizer = self.model.get_tokenizer()

@@ -6,7 +6,7 @@ google-generativeai
 grpcio-tools
 immutabledict==2.0.0
 IPython
-jsonschema==4.17.3
+jsonschema
 matplotlib==3.6.1
 opencv-python
 pydub
@@ -21,7 +21,7 @@ peft
 azure-identity
 vllm==0.7.3
 bs4
-bitsandbytes==0.45.5=
+bitsandbytes==0.45.5
 datasets==3.1.0
 decord==0.6.0
 deepspeed==0.16.1

@@ -6,7 +6,6 @@ from transformers import Trainer
 from transformers.trainer import (
     is_sagemaker_mp_enabled,
     get_parameter_names,
-    ALL_LAYERNORM_LAYERS,
     is_peft_available,
     WEIGHTS_NAME,
     TRAINING_ARGS_NAME,
