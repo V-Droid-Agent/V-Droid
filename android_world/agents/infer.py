@@ -633,7 +633,7 @@ class Gpt4_Llama_Mix_Wrapper(LlmWrapper, MultimodalLlmWrapper):
         self.service_name = service_name
         adapter_dir = "MaginaDai/" + adapter_dir
         self.reward_model = LlamaRewardModel(
-            local_model_name, adapter_dir, cluster=0, reward_type=reward_type, prefix_sharing=prefix_sharing)
+            local_model_name, adapter_dir, cluster=0, train_from_scratch=0, reward_type=reward_type, prefix_sharing=prefix_sharing)
 
     @classmethod
     def encode_image(cls, image: np.ndarray) -> str:

@@ -78,12 +78,12 @@ Paper link: https://arxiv.org/abs/2503.15937
 
 7. Download Lora weights for V-Droid model
    
-   The V-Droid model weight is available at [MaginaDai/V-Droid-110K](https://huggingface.co/MaginaDai/V-Droid-110K)
+   The V-Droid model weight is available at [MaginaDai/V-Droid-8B-0323](https://huggingface.co/MaginaDai/V-Droid-8B-0323)
 
 8. Lauanch the emulator and run the eveluation tasks
    ```bash
    emulator -avd AndroidWorldAvd -no-window -no-snapshot -grpc 8554
-   bash main_standalone.sh
+   bash main.sh
    ```
 
 
