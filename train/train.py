@@ -70,7 +70,7 @@ def get_args():
         args.model_name = "unsloth/Llama-3.2-11B-Vision-Instruct-bnb-4bit"
     elif args.model == "Llama-31-8B":
         if args.add_special_tokens == 1: 
-            args.model_name = "MaginaDai/llama3.1-ui-resized"
+            args.model_name = "V-Droid/llama3.1-ui-resized"
         else:
             args.model_name = "unsloth/Meta-Llama-3.1-8B-Instruct-bnb-4bit"
     elif args.model == "Deepseek-r1-Qwen-7B":

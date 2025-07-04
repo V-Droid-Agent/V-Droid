@@ -631,7 +631,7 @@ class Gpt4_Llama_Mix_Wrapper(LlmWrapper, MultimodalLlmWrapper):
         self.local_model_name = local_model_name
         self.reward_type = reward_type
         self.service_name = service_name
-        adapter_dir = "MaginaDai/" + adapter_dir
+        adapter_dir = "V-Droid/" + adapter_dir
         self.reward_model = LlamaRewardModel(
             local_model_name, adapter_dir, cluster=0, train_from_scratch=0, reward_type=reward_type, prefix_sharing=prefix_sharing)
 
