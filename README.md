@@ -121,7 +121,7 @@ For more details, please refer our code
 If you use this repo, please cite our paper:
 
 ```bibtex
-@misc{dai2025advancingmobileguiagents,
+@article{dai2025advancingmobileguiagents,
       title={Advancing Mobile GUI Agents: A Verifier-Driven Approach to Practical Deployment}, 
       author={Gaole Dai and Shiqi Jiang and Ting Cao and Yuanchun Li and Yuqing Yang and Rui Tan and Mo Li and Lili Qiu},
       year={2025},
