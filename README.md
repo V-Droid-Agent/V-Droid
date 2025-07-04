@@ -8,7 +8,7 @@ This repo provides the public preview for **V-Droid**(https://arxiv.org/abs/2503
 
 - :white_check_mark: Paper link: https://arxiv.org/abs/2503.15937
 - :white_check_mark: Model weitghs: https://huggingface.co/V-Droid/V-Droid-8B-0323
-- 
+  
 ## Demos
 V-Droid in the following demos are hosted on 2x4090 GPUs, the videos are presented without acceleration.
 
