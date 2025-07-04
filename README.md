@@ -2,7 +2,7 @@
    <img src="https://github.com/user-attachments/assets/fa805972-efdf-449d-a716-68364bbaaf93" width=600 height=400>
 </div>
 
-# :alien:V-Droid: Advancing Mobile GUI Agent Through Generative Verifiers
+# :alien: V-Droid: Advancing Mobile GUI Agent Through Generative Verifiers
 
 This repo provides the public preview for **V-Droid**(https://arxiv.org/abs/2503.15937), a verifier-driven mobile GUI agents. Unlike previous mobile agents that utilize Large Language Models (LLMs) as generators to directly generate actions at each step, V-Droid **employs LLMs** as verifiers to evaluate candidate actions before making final decisions. To realize this novel paradigm, we introduce a comprehensive framework for constructing verifier-driven mobile agents: the discretized *action space construction* coupled with the prefilling-only workflow to accelerate the verification process, *the pair-wise progress preference training* to significantly enhance the verifier's decision-making capabilities, and *the scalable human-agent joint annotation scheme* to efficiently collect the necessary data at scale. V-Droid sets a new state-of-the-art task success rate across several public mobile task automation benchmarks: 59.5% on AndroidWorld, 38.3% on AndroidLab, and 49% on MobileAgentBench, surpassing existing agents by 9.5%, 2.1%, and 9%, respectively. Furthermore, V-Droid achieves an impressively low latency of 0.7 seconds per step, making it the first mobile agent capable of delivering near-real-time, effective decision-making capabilities.
 
@@ -78,6 +78,8 @@ For more details, please refer our code
 6. Add model provider APIs as environment variables.
 
     Three API providers are supported: OpenAI and its compatible APIs, and Azure OpenAI services. You may configure any of these based on your preferences.
+   
+   **These APIs are only used for building the working memory, V-Droid allows to build the working memory without using these third-party APIs**
     ```bash
     # Add to .bashrc.
 
@@ -98,18 +100,18 @@ For more details, please refer our code
     export AZURE_OPENAI_ENDPOINT=
     ```
 
-7. Download Lora weights for V-Droid model
+8. Download Lora weights for V-Droid model
    
    The V-Droid model weight is available at https://huggingface.co/V-Droid/V-Droid-8B-0323
 
-8. Lauanch the emulator and run the eveluation tasks
+9. Lauanch the emulator and run the eveluation tasks
    ```bash
    emulator -avd AndroidWorldAvd -no-window -no-snapshot -grpc 8554
    bash main.sh
    ```
 
 
-9. Training 
+10. Training 
    You may use the following code to train the lora module in V-Droid. We provide several training pairs to use.
    ```bash
    train.sh 
