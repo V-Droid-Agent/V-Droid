@@ -2,7 +2,7 @@
    <img src="https://github.com/user-attachments/assets/fa805972-efdf-449d-a716-68364bbaaf93" width=600 height=400>
 </div>
 
-# :alien: V-Droid: Advancing Mobile GUI Agent Through Generative Verifiers
+# :alien: V-Droid: Advancing Mobile GUI Agent Through Generative Verifiers (MobiCom'26)
 
 This repo provides the public preview for **V-Droid**(https://arxiv.org/abs/2503.15937), a verifier-driven mobile GUI agents. Unlike previous mobile agents that utilize Large Language Models (LLMs) as generators to directly generate actions at each step, V-Droid **employs LLMs** as verifiers to evaluate candidate actions before making final decisions. To realize this novel paradigm, we introduce a comprehensive framework for constructing verifier-driven mobile agents: the discretized *action space construction* coupled with the prefilling-only workflow to accelerate the verification process, *the pair-wise progress preference training* to significantly enhance the verifier's decision-making capabilities, and *the scalable human-agent joint annotation scheme* to efficiently collect the necessary data at scale. V-Droid sets a new state-of-the-art task success rate across several public mobile task automation benchmarks: 59.5% on AndroidWorld, 38.3% on AndroidLab, and 49% on MobileAgentBench, surpassing existing agents by 9.5%, 2.1%, and 9%, respectively. Furthermore, V-Droid achieves an impressively low latency of 0.7 seconds per step, making it the first mobile agent capable of delivering near-real-time, effective decision-making capabilities.
 
@@ -131,3 +131,4 @@ If you use this repo, please cite our paper:
       url={https://arxiv.org/abs/2503.15937}, 
 }
 ```
+
